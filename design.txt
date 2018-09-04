@@ -1,0 +1,25 @@
+The goal of this project is to design a neural network from scratch and to use
+said NN to perform some sort of classification.
+
+Neural Networks are composed of a series of connected layers. The first layer 
+is known as the 'input layer' and has one artificial neuron for each input. 
+
+All of the input neurons recieve an unfiltered signal from the input, and 
+process that signal using an activation function (for example the sigmoid
+function or identity function) to produce an output.
+
+In a fully-connected neural network each input neuron is connected to all of
+the neurons in the next layer so that the input for one neuron in layer two is
+the sum of all of the outputs from layer one (with each output being 
+multiplied by a weight).
+
+Components of a NN:
+Layers
+	Neurons
+		Inputs
+		Activation Function
+		Output
+Weights
+Biases
+
+
