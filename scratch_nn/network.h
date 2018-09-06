@@ -8,10 +8,12 @@
 
 class Network
 {
-	std::vector<Layer> *m_layers;
-	std::vector<arma::mat> *m_weights;
+	std::vector<Layer *> m_layers;
+	std::vector<arma::mat *> m_weights;
+	void updateMatrices();
 public:
-	void addLayer();
-	void insertLayer();
-	void computeOutput();
+	void addLayer(Layer *newLayer);
+	void insertLayer(Layer *newLayer);
+	double computeOutput(arma::mat input, int expectedOutput);
+	const std::vector* getWeights() {return &m_weights;}
 };

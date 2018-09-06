@@ -10,17 +10,10 @@ class Layer
 {
 	//List of neurons
 	int m_size;
-	Layer *m_nextLayer;
-	Layer *m_prevLayer;
 public:
-	Layer()
+	Layer(int layerSize)
 	{
-		
-	}
-
-	Layer(Layer prev, Layer next)
-	{
-
+		this->m_size = layerSize;	
 	}
 
 	//Inputs:
@@ -28,9 +21,11 @@ public:
 	//    biases: matrix representing biases
 	//Output:
 	//    layer_output: matrix representing the output of every neuron in this layer
-	void activate();
+	double activate(arma::mat inputs);
 
 	//Input:
 	//    Lambda representing activation function
 	void setActivationFunction();
+
+	int getLayerSize() {return this->m_size;}
 };
