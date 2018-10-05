@@ -18,6 +18,14 @@ int selectIndividual(std::vector<individual *> *pop,
 	int ind = abs(dist(*generator));
 	return ind;
 }
+individual * breedIndividuals(individual *a, individual *b) {
+	individual *n = new individual;
+	n->nn = new Network();
+	n->error = 0.0;
+	n->nn->addLayer(new Layer(2));
+	n->nn->addLayer(new Layer(2));
+	n->nn->addLayer(new Layer(1));
+}
 /** basic implementation of a neural network **/
 
 int main()
@@ -75,6 +83,7 @@ int main()
 	for(int i=0; i <pop_size; i++) {
 		int a = selectIndividual(&pop, &g);
 		int b = selectIndividual(&pop, &g);
+		newPop.push_back(breedIndividuals(pop[a], pop[b]));
 	}
 	//Selection - select from the top quartile
 	//
