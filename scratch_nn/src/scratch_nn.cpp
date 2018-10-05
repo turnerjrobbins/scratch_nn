@@ -18,6 +18,7 @@ int selectIndividual(std::vector<individual *> *pop,
 	int ind = abs(dist(*generator));
 	return ind;
 }
+
 individual * breedIndividuals(individual *a, individual *b) {
 	individual *n = new individual;
 	n->nn = new Network();
@@ -25,12 +26,40 @@ individual * breedIndividuals(individual *a, individual *b) {
 	n->nn->addLayer(new Layer(2));
 	n->nn->addLayer(new Layer(2));
 	n->nn->addLayer(new Layer(1));
+    std::vector<mat *> *weights = n->nn->getWeights();
+    std::vector<mat *> *a_weights = a->nn->getWeights();
+    std::vector<mat *> *b_weights = b->nn->getWeights();
+    weights->at(0) = a_weights->at(0);
+    weights->at(1) = b_weights->at(1);
+    return n;
+}
+
+void mutateIndividual(individual *ind, double mutRate) { 
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0.0,1.0);
+    
+    //std::cout << "Accessing Weights" << std::endl;
+    std::vector<mat *> *weights = ind->nn->getWeights(); 
+    //std::cout << "Accessing Matrix" << std::endl;
+    //std::cout << "Doing foreach" << std::endl;
+    for(mat *mutMatx : *weights) { 
+       mutMatx->for_each([&](mat::elem_type& val) {
+           if(dis(gen) < mutRate) {
+               val += rand() % 2 ? .1 : -.1;
+               std::cout << "Pop mutated" << std::endl;
+           }
+       } );
+    }
+
 }
 /** basic implementation of a neural network **/
 
 int main()
 {
-	std::cout << "hello world\n";
+	std::cout << "Neural Network\n";
+
+    //Define GA constants
 	const double select_from = 0.25;
 	const double mutation_rate = 0.01;
 	const int pop_size = 100;
@@ -50,7 +79,8 @@ int main()
 		pop.push_back(newInd);
 	}
 	std::cout << "Population Generated." << std::endl;
-	//Run NNs with samples using loss as fitness
+	
+    //Run NNs with samples using loss as fitness
 	struct testData {
 		arma::mat *input = new arma::mat(1,2);
 		bool b_expected;
@@ -66,18 +96,24 @@ int main()
 		batch.push_back(newData);
 	}
 	std::cout << "Test Data Created" << std::endl;	
-	for(individual *p : pop) {
+    
+    train:	
+    //EVALUATION
+    for(individual *p : pop) {
 		for(testData *t : batch) {
-			p->error += p->nn->computeOutput(*(t->input), t->b_expected);
+			p->error += std::abs(p->nn->computeOutput(*(t->input), t->b_expected));
 		}
 	}
 	std::cout << "Evalutation Complete" << std::endl;
-
 	std::sort(pop.begin(), pop.end(),
 			[] (individual *a, individual*b) {return a->error < b->error;});
 
 	std::cout << "Lowest error: " << pop[0]->error << std::endl;
+    if(std::abs(pop[0]->error) < 0.01) {
+        exit(0);
+    }	
 	
+    //SELECTION AND BREEDING
 	std::default_random_engine g;	
 	std::vector<individual *> newPop;
 	for(int i=0; i <pop_size; i++) {
@@ -85,10 +121,11 @@ int main()
 		int b = selectIndividual(&pop, &g);
 		newPop.push_back(breedIndividuals(pop[a], pop[b]));
 	}
-	//Selection - select from the top quartile
-	//
-	//Breeding strategy - select 1st matrix from parent 1, 2nd from parent 2
-	//
-	//Mutate weights up or down
-	
+    pop = newPop;
+    for(auto *ind : pop) {
+        mutateIndividual(ind, mutation_rate );
+    } 
+    std::cout << "Mutation Complete" << std::endl;
+    //Mutate weights up or down
+    goto train;
 }

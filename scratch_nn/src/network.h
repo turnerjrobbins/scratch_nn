@@ -15,5 +15,5 @@ public:
 	void addLayer(Layer *newLayer);
 	void insertLayer(Layer *newLayer);
 	double computeOutput(arma::mat input, int expectedOutput);
-	const std::vector<arma::mat *>* getWeights() {return &m_weights;}
+	std::vector<arma::mat *>* getWeights() {return &m_weights;}
 };
